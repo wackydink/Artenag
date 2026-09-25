@@ -219,21 +219,13 @@
     </div>
 
     <script>
-        // Now 'tags' is an array supporting multiple classifications per build
         const buildsDatabase = [
             {
-                name: 'Artenag_v1.0.0_rc.zip',
+                name: '0.0.1.7z',
                 tags: ['latest', 'prototype'],
-                date: '25.09.2026',
-                size: '98 MB',
-                url: '#'
-            },
-            {
-                name: 'Artenag_v0.0.1_prototype.zip',
-                tags: ['prototype'],
                 date: '02.09.2026',
                 size: '94 MB',
-                url: '#'
+                url: 'https://github.com/wackydink/Artenag/releases/download/v0.0.1/0.0.1.7z'
             }
         ];
 
@@ -252,35 +244,23 @@
             const filtered = buildsDatabase.filter(b => b.name.toLowerCase().includes(query));
 
             filtered.forEach(build => {
-                // Map array of tags into individual badge elements
                 const tagsHTML = build.tags.map(tag => `<span class="${getBadgeClass(tag)}">${tag}</span>`).join('');
 
                 const row = document.createElement('div');
                 row.className = 'row';
                 row.innerHTML = `
                     <div class="col-name">${build.name}</div>
-                    <td><div class="tags-container">${tagsHTML}</div></td>
+                    <div><div class="tags-container">${tagsHTML}</div></div>
                     <div class="col-date">${build.date}</div>
                     <div class="col-size">${build.size}</div>
                     <div>
-                        <a href="${build.url}" class="download-btn" onclick="handleDownload(event, '${build.name}')">Download</a>
+                        <a href="${build.url}" class="download-btn">Download</a>
                     </div>
                 `;
                 container.appendChild(row);
             });
 
             counter.innerText = `${filtered.length} build(s) loaded`;
-        }
-
-        function handleDownload(e, filename) {
-            e.preventDefault();
-            const element = document.createElement('a');
-            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent('Simulated secure binary payload package for ' + filename));
-            element.setAttribute('download', filename);
-            element.style.display = 'none';
-            document.body.appendChild(element);
-            element.click();
-            document.body.removeChild(element);
         }
 
         window.onload = () => renderBuilds();
