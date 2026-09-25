@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARTENAG // BUILDS</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --card: #121212;
+            --border: #222222;
+            --text: #a1a1aa;
+            --text-bright: #f4f4f5;
+            --accent: #3b82f6;
+            --latest: #10b981;
+            --prototype: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'JetBrains Mono', monospace;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            color: var(--text-bright);
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 0.85rem;
+            color: var(--text);
+            margin-top: 4px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 12px 16px;
+            border-radius: 6px;
+        }
+
+        .search-input {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text-bright);
+            padding: 8px 12px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            outline: none;
+            width: 260px;
+            border-radius: 4px;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent);
+        }
+
+        .counter {
+            font-size: 0.85rem;
+        }
+
+        .table {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 2fr 1.2fr 1fr 1fr 100px;
+            padding: 12px 16px;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.85rem;
+        }
+
+        .row:last-child {
+            border-bottom: none;
+        }
+
+        .header-row {
+            background: #0f0f0f;
+            color: var(--text);
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .col-name {
+            color: var(--text-bright);
+            font-weight: 500;
+            word-break: break-all;
+        }
+
+        .tags-container {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-radius: 4px;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .badge-latest {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--latest);
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+
+        .badge-prototype {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--prototype);
+            border-color: rgba(245, 158, 11, 0.2);
+        }
+
+        .download-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-bright);
+            padding: 6px 10px;
+            font-family: inherit;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border-radius: 4px;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .download-btn:hover {
+            border-color: var(--accent);
+            background: rgba(59, 130, 246, 0.05);
+            color: var(--accent);
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.75rem;
+            border-top: 1px solid var(--border);
+            padding-top: 16px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        @media(max-width: 768px) {
+            .row {
+                grid-template-columns: 2fr 1.2fr 80px;
+            }
+            .col-date, .col-size {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>ARTENAG // BUILDS</h1>
+            <p>Secure binary repository</p>
+        </header>
+
+        <div class="controls">
+            <input type="text" class="search-input" id="searchBox" placeholder="Filter builds..." oninput="renderBuilds()">
+            <div class="counter" id="itemCounter">0 builds loaded</div>
+        </div>
+
+        <div class="table">
+            <div class="row header-row">
+                <div>Filename</div>
+                <div>Status</div>
+                <div>Date</div>
+                <div>Size</div>
+                <div>Action</div>
+            </div>
+            <div id="buildsContainer"></div>
+        </div>
+
+        <footer>
+            <div>&copy; 2026 Artenag Project</div>
+            <div>Rayyan (WackyDink)</div>
+        </footer>
+    </div>
+
+    <script>
+        // Now 'tags' is an array supporting multiple classifications per build
+        const buildsDatabase = [
+            {
+                name: 'Artenag_v1.0.0_rc.zip',
+                tags: ['latest', 'prototype'],
+                date: '25.09.2026',
+                size: '98 MB',
+                url: '#'
+            },
+            {
+                name: 'Artenag_v0.0.1_prototype.zip',
+                tags: ['prototype'],
+                date: '02.09.2026',
+                size: '94 MB',
+                url: '#'
+            }
+        ];
+
+        function getBadgeClass(tag) {
+            if (tag === 'latest') return 'badge badge-latest';
+            if (tag === 'prototype') return 'badge badge-prototype';
+            return 'badge';
+        }
+
+        function renderBuilds() {
+            const query = document.getElementById('searchBox').value.toLowerCase();
+            const container = document.getElementById('buildsContainer');
+            const counter = document.getElementById('itemCounter');
+            container.innerHTML = '';
+
+            const filtered = buildsDatabase.filter(b => b.name.toLowerCase().includes(query));
+
+            filtered.forEach(build => {
+                // Map array of tags into individual badge elements
+                const tagsHTML = build.tags.map(tag => `<span class="${getBadgeClass(tag)}">${tag}</span>`).join('');
+
+                const row = document.createElement('div');
+                row.className = 'row';
+                row.innerHTML = `
+                    <div class="col-name">${build.name}</div>
+                    <td><div class="tags-container">${tagsHTML}</div></td>
+                    <div class="col-date">${build.date}</div>
+                    <div class="col-size">${build.size}</div>
+                    <div>
+                        <a href="${build.url}" class="download-btn" onclick="handleDownload(event, '${build.name}')">Download</a>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+
+            counter.innerText = `${filtered.length} build(s) loaded`;
+        }
+
+        function handleDownload(e, filename) {
+            e.preventDefault();
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent('Simulated secure binary payload package for ' + filename));
+            element.setAttribute('download', filename);
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
+        window.onload = () => renderBuilds();
+    </script>
+</body>
+</html>
